@@ -31,4 +31,29 @@ double UniformStripingDecoder::decode(const std::vector<double> & chromosome) co
 	return min;
 }
 
+// TODO(mteh) : finish this
+std::vector<Covering> 
+UniformStripingDecoder::get_striping(const std::vector<double>& chromosome) const {
+	std::vector<Covering> soln(num_optical_switches_);
+	return soln;
+}
+
+double get_striping_goodness(const std::vector<double>& chromosome) const {
+	double striping_goodness = 0;
+	return striping_goodness;
+}
+
+void UniformStripingDecoder::initialize(const PhysicalTopologyInstance& physical_topology_instance) {
+	num_optical_switches_ = physical_topology_instance.get_num_coverings();
+	num_electrical_switches_ = physical_topology_instance.get_num_nodes();
+	electrical_switches_link_budget_.resize(num_electrical_switches_);
+	optical_switches_link_budget_.resize(num_optical_switches_);
+	for (int i = 0; i < num_electrical_switches; i++) {
+		electrical_switches_link_budget_[i] = physical_topology_instance.get_node_link_counts(i);
+	}
+	for (int i = 0; i < num_optical_switches_; i++) {
+		optical_switches_link_budget_[i] = physical_topology_instance.get_covering_link_counts(i);
+	}
+}
+
 }  // namespace topology_solver

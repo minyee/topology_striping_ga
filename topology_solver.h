@@ -16,8 +16,6 @@ struct Covering {
 
 // parameters for the genetics algorithm
 struct GAParams {
-	uint32_t n; // number of chromosomes
-	uint32_t p; // number of alleles per chromosome
 	double pe; // probability of elite items into next population
 	double pm; // probability of mutants introduced at each iteration into the next population
 	double rhoe; // probability that an offspring inherits the allele of its elite parent
@@ -26,15 +24,13 @@ struct GAParams {
 // By default, the fitness function will evaluate the uniform striping
 class TopologySolver {
   public:
-  	TopologySolver(const uint32_t iterations, const GAParams& params, const PhysicalTopologyInstance& physical) : 
-  			max_iterations_(iterations), instance_(instance) {};
+  	TopologySolver(const uint32_t iterations, const GAParams& params, 
+  		 			 const PhysicalTopologyInstance& physical_instance) : 
+  			max_iterations_(iterations), instance_(physical_instance) {};
 
   	virtual ~TopologySolver();  
 
-  	void solve();
-
-  protected:
-  	void initialize(); 
+  	void solve(const uint32_t num_iter);
 
   private:
   	uint32_t max_iterations_;

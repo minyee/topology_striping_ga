@@ -73,7 +73,10 @@
 #ifndef BRKGA_H
 #define BRKGA_H
 
+#if _OPENMP
 #include <omp.h>
+#endif
+
 #include <algorithm>
 #include <exception>
 #include <stdexcept>

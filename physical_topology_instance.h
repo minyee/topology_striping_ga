@@ -31,6 +31,22 @@ class PhysicalTopologyInstance {
   		}
   	};
 
+  	uint32_t get_num_nodes() const {
+  		return node_link_counts_.size();
+  	};
+
+  	uint32_t get_num_coverings() const {
+  		return covering_link_counts_.size();
+  	}
+
+  	uint32_t get_node_link_counts(const uint32_t id) const {
+  		return node_link_counts_[id];
+  	}
+
+  	uint32_t get_covering_link_counts(const uint32_t id) const {
+  		return covering_link_counts_[id];
+  	}
+
   private:
   	std::vector<uint32_t> node_link_counts_;
 
