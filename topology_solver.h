@@ -9,17 +9,16 @@
 #include "uniform_striping_decoder.h"
 
 namespace topology_solver {
-struct Covering {
-	uint32_t id;
-	std::set<uint32_t> striping;
-};
 
 // parameters for the genetics algorithm
 struct GAParams {
 	double pe; // probability of elite items into next population
 	double pm; // probability of mutants introduced at each iteration into the next population
 	double rhoe; // probability that an offspring inherits the allele of its elite parent
-}
+	uint32_t num_threads;
+	uint32_t K;  // number of independent populations
+	uint32_t reset_gen;  // reset after how many generations of not being able to improve upon a better solution
+};
 
 // By default, the fitness function will evaluate the uniform striping
 class TopologySolver {

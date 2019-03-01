@@ -1,3 +1,7 @@
+#ifndef UNIFORMSTRIPINGDECODER
+#define UNIFORMSTRIPINGDECODER
+
+#include <iostream>
 #include "physical_topology_instance.h"
 
 namespace topology_solver {
@@ -30,7 +34,8 @@ class UniformStripingDecoder {
   	std::vector<uint32_t> optical_switches_link_budget_;
 
   	virtual void initialize(const PhysicalTopologyInstance& physical_topology_instance);
-}
+};
 
 }  //  namespace topology_solver
 
+#endif

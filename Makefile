@@ -14,7 +14,7 @@ CPP= g++
 #	no binary code optimization
 #CFLAGS= -DRANGECHECK -Wextra -Wall -Weffc++ -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
 
-OBJECTS= uniform_striping.o topology_solver.o Population.o topology_striping.o
+OBJECTS= uniform_striping_decoder.o topology_solver.o Population.o topology_striping.o
 
 # Targets:
 all: topology_striping
@@ -22,8 +22,11 @@ all: topology_striping
 topology_striping: $(OBJECTS)
 	$(CPP) $(CFLAGS) $(OBJECTS) -o topology_striping
 
-uniform_striping.o:
-	$(CPP) $(CFLAGS) -c topology_striping.cc
+topology_striping.o:
+	$(CPP) $(CFLAGS) $(OBJECTS) -o topology_striping.cc	
+
+uniform_striping_decoder.o:
+	$(CPP) $(CFLAGS) -c uniform_striping_decoder.cc
 
 topology_solver.o:
 	$(CPP) $(CFLAGS) -c topology_solver.cc

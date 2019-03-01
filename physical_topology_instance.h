@@ -1,5 +1,16 @@
+#ifndef PHYSICALTOPOLOGYINSTANCE
+#define PHYSICALTOPOLOGYINSTANCE
+
+#include <vector>
+#include <set>
 //  Problem instance for a topology striping problem
 namespace topology_solver {
+
+struct Covering {
+	uint32_t id;
+	std::set<uint32_t> striping;
+};
+
 
 // class that defines the physical constraints of the problem
 class PhysicalTopologyInstance {
@@ -55,3 +66,5 @@ class PhysicalTopologyInstance {
 };
 
 }  // namespace topology_solver
+
+#endif

@@ -5,8 +5,8 @@ namespace topology_solver {
 double UniformStripingDecoder::decode(const std::vector<double> & chromosome) const {
 	// Penalize constraint violation
 	const double large_number = 10E10;
-	std::vector<int> es_coverings(num_electrical_switches, 0);
-	std::vector<int> os_coverings(num_optical_switches, 0);
+	std::vector<int> es_coverings(num_electrical_switches_, 0);
+	std::vector<int> os_coverings(num_optical_switches_, 0);
 	for (const auto& covering : coverings) {
 		const uint32_t os_id = covering.id;
 		for (const auto& entry : covering.striping) {
