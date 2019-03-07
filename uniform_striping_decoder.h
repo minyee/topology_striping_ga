@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "physical_topology_instance.h"
+#include "mincost.h"
 
 namespace topology_solver {
 
@@ -25,6 +26,8 @@ class UniformStripingDecoder {
   	};
 
   protected:
+  	virtual std::vector<Covering> transform_chromosome_to_coverings(const std::vector<double>& chromosome) const; 
+
   	int num_optical_switches_;
 
   	int num_electrical_switches_;

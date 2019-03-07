@@ -7,6 +7,7 @@ CPP= g++
 #	full error and warning reports
 #	no range checking within BRKGA:
 #CFLAGS= -O3 -fopenmp -Wextra -Wall -Weffc++ -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
+CFLAGS= -Wall -O3 -Wextra -Wall -Wc++11-extensions -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
 
 # Compiler flags for debugging; uncomment if needed:
 #	range checking enabled in the BRKGA API
@@ -14,16 +15,16 @@ CPP= g++
 #	no binary code optimization
 #CFLAGS= -DRANGECHECK -Wextra -Wall -Weffc++ -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
 
-OBJECTS= uniform_striping_decoder.o topology_solver.o Population.o topology_striping.o
+OBJECTS= uniform_striping_decoder.o topology_solver.o Population.o topology_striping.o mincost.o
 
 # Targets:
-all: topology_striping
+all: topol_striping
 
-topology_striping: $(OBJECTS)
-	$(CPP) $(CFLAGS) $(OBJECTS) -o topology_striping
+topol_striping: $(OBJECTS)
+	$(CPP) $(CFLAGS) $(OBJECTS) -o topol_striping
 
 topology_striping.o:
-	$(CPP) $(CFLAGS) $(OBJECTS) -o topology_striping.cc	
+	$(CPP) $(CFLAGS) -c topology_striping.cc	
 
 uniform_striping_decoder.o:
 	$(CPP) $(CFLAGS) -c uniform_striping_decoder.cc
@@ -34,6 +35,9 @@ topology_solver.o:
 Population.o:
 	$(CPP) $(CFLAGS) -c brkgaAPI/Population.cpp
 
+mincost.o:
+	$(CPP) $(CFLAGS) -c mincost.cpp
+
 # Remove:
 clean:
-	rm -f brkga-stp $(OBJECTS)
+	rm -f topol_striping $(OBJECTS)
