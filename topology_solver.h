@@ -27,7 +27,7 @@ class TopologySolver {
   		 			 const PhysicalTopologyInstance& physical_instance) : 
   			max_iterations_(iterations), instance_(physical_instance) {};
 
-  	virtual ~TopologySolver();  
+  	virtual ~TopologySolver() {};  
 
   	void solve(const uint32_t num_iter);
 

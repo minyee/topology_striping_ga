@@ -52,7 +52,7 @@ void printParams(const Graph& g, int parentVertex[], int distance[]){
         std::cout << distance[i] << " ";
     }
     std::cout << std::endl;
-};
+}
 
 // Detects the presence of negative cycles in graph
 // Output:
