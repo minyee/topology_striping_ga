@@ -27,20 +27,13 @@ UniformStripingDecoder::decode(const std::vector<double> & chromosome) const {
 			return -large_number;
 		}
 	}
-	// find min
+	// find min 
 	int min = 10E5;
 	for (const auto& es : es_coverings) {
 		min = std::min(es, min);
 	}
 	// assuming that we 
 	return min;
-}
-
-// TODO(mteh) : finish this
-std::vector<Covering> 
-UniformStripingDecoder::get_striping(const std::vector<double>& chromosome) const {
-	std::vector<Covering> soln(num_optical_switches_);
-	return soln;
 }
 
 double 
@@ -103,6 +96,11 @@ UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<doub
 										optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 0);
 		mincost::Edge* tmp_edge4 = mincost::genEdge(dst, optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 
 										optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 0);
+		tmp_edge3->counterEdge = tmp_edge4;
+		tmp_edge4->counterEdge = tmp_edge3;
+		g.adj[node_id].push_back(tmp_edge3);
+		residual.adj[node_id].push_back(tmp_edge3);
+		residual.adj[dst].push_back(tmp_edge4);	
 	}
 
 	// now, start running the algorithm and check the results, if valid, then read the chromosomes into solution
@@ -115,7 +113,20 @@ UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<doub
 		std::cerr << "Invalid solution from mincost flow solver" << std::endl;
 	} else {
 		// try to read the bipartite graph's flow
-		
+		// for all the arcs that connect the left side and right side vertices in the 
+		// bipartite flow graph, read the entries that have flow
+		for (int i = 0; i < num_optical_switches_; i++) {
+			covering_soln[i].id = i;
+		}
+		for (int i = 1; i <= num_electrical_switches_; i++) {
+			for (int j = 0; j < g.adj[i].size(); j++) {
+				if (g.adj[i][j]->capacity - g.adj[i][j]->residualFlow >= 1) {
+					const uint32_t ocs_id = g.adj[i][j]->destination - num_electrical_switches_ - 1;	
+					const uint32_t eps_id = i - 1;
+					covering_soln[ocs_id].striping.insert(eps_id);
+				}
+			}
+		}
 	}
 	return covering_soln;
 }

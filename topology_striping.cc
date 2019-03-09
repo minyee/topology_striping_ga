@@ -31,13 +31,18 @@ int main(int argc, char* argv[]) {
 
 	topology_solver::GAParams params;
 	const uint32_t num_iterations = 30;
-	params.pe = 0.5; // probability of elite items into next population
-	params.pm = 0.5; 
-	params.rhoe = 0.5;
-	params.num_threads = 1;
-	params.K = 5;
+	params.pe = 0.7; // probability of elite items into next population
+	params.pm = 0.2; 
+	params.rhoe = 0.1;
+	params.num_threads = 3;
+	params.K = 3;
 	params.reset_gen = 30;
+
+	
 	topology_solver::TopologySolver solver(num_iterations, params, physical_instance);
 	std::cout << "Exited topology designer" << std::endl;
+
+	// maybe each chromosome itself is a physical connectivity, and 
+	// then the population just contains different stripings
 	return 0;
 }

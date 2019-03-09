@@ -17,17 +17,15 @@ class UniformStripingDecoder {
 
   	double decode(const std::vector<double>& chromosome) const;
 
-  	virtual std::vector<Covering> get_striping(const std::vector<double>& chromosome) const;
-
   	virtual double get_striping_goodness(const std::vector<double>& chromosome) const;
 
   	virtual std::string to_string() const {
   		return "Uniform striping where we prioritize that the minimum striped switch pairs are maximized";
   	};
 
-  protected:
   	virtual std::vector<Covering> transform_chromosome_to_coverings(const std::vector<double>& chromosome) const; 
-
+  
+  protected:
   	int num_optical_switches_;
 
   	int num_electrical_switches_;

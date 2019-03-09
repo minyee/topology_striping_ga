@@ -5,20 +5,23 @@
 namespace topology_solver {
 
 // iteratively employ the genetics algorithm
-void TopologySolver::solve(const uint32_t num_iter) {
+void TopologySolver::solve() {
 	// initialize by creating the decoder instance and also the random number generator
 	const long unsigned rng_seed = 10035353;
 	UniformStripingDecoder usd(instance_);
 	MTRand rng(rng_seed);
-	BRKGA<UniformStripingDecoder, MTRand> ga(instance_.get_num_nodes(), instance_.get_num_coverings(), 
+	const uint32_t num_alleles_per_chromosome = 
+		instance_.get_num_coverings() * instance_.get_num_nodes();
+	BRKGA<UniformStripingDecoder, MTRand> ga(num_alleles_per_chromosome, params_.p, 
 			params_.pe, params_.pm, params_.rhoe, usd, rng, params_.K, params_.num_threads);
 	// TODO(jason) : check if this is right or wrong
 	double best_fitness = 1000000; 
 	uint32_t best_generation = 0;
+	
 	std::vector<double> best_chromosomes;
-	for (int i = 1; i <= num_iter; i++) {
-		ga.evolve(); // first try to evolve population
 
+	for (int i = 1; i <= max_iterations_; i++) {
+		ga.evolve(); // first try to evolve population
 		// find out if the current generation has the best fitness after evolving
 		if (ga.getBestFitness() < best_fitness) {
 			best_generation = i;
@@ -33,11 +36,18 @@ void TopologySolver::solve(const uint32_t num_iter) {
 			std::cout << "Reset at generation " << std::to_string(i) << std::endl;
 		}
 
+		// Evolution strategy: exchange the top individuals among the populations
+		if (i %  10 == 0 && best_generation != i) {
+			ga.exchangeElite(3); // exchange the top 3 chromosomes
+			std::cout << "Exchanging elite individuals: " << std::to_string(3) 
+					  << " individuals are exchanged" << std::endl;
+		}
+
 		// evolution strategy exchange top individuals among the populations
 	}
 
 	// now try to reconstruct the best chromosomes as the striping solution
-	std::vector<Covering> striping_pattern = usd.get_striping(best_chromosomes);
+	std::vector<Covering> striping_pattern = usd.transform_chromosome_to_coverings(best_chromosomes);
 	std::cout << "Best striping value has fitness value of: " 
 			  << std::to_string(usd.get_striping_goodness(best_chromosomes)) << std::endl;
 }

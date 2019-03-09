@@ -12,6 +12,7 @@ namespace topology_solver {
 
 // parameters for the genetics algorithm
 struct GAParams {
+	uint32_t p; // num chromosomes per population
 	double pe; // probability of elite items into next population
 	double pm; // probability of mutants introduced at each iteration into the next population
 	double rhoe; // probability that an offspring inherits the allele of its elite parent
@@ -29,7 +30,7 @@ class TopologySolver {
 
   	virtual ~TopologySolver() {};  
 
-  	void solve(const uint32_t num_iter);
+  	void solve();
 
   private:
   	uint32_t max_iterations_;
