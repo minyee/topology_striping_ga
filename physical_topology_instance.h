@@ -1,6 +1,6 @@
 #ifndef PHYSICALTOPOLOGYINSTANCE
 #define PHYSICALTOPOLOGYINSTANCE
-
+#include <iostream>
 #include <vector>
 #include <set>
 //  Problem instance for a topology striping problem
@@ -58,6 +58,17 @@ class PhysicalTopologyInstance {
   		return covering_link_counts_[id];
   	}
 
+  	void print_params() const {
+  		std::cout << "Number of nodes: " << node_link_counts_.size() << std::endl << "lc: ";
+  		for (const auto lc : node_link_counts_) {
+  			std::cout << lc << ",  ";
+  		}
+  		std::cout << std::endl;
+  		std::cout << "Number of coverings: " << covering_link_counts_.size() << std::endl << "lc: ";
+		for (const auto lc : covering_link_counts_) {
+  			std::cout << lc << ",  ";
+  		}  		
+  	}
   private:
   	std::vector<uint32_t> node_link_counts_;
 

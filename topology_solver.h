@@ -26,7 +26,7 @@ class TopologySolver {
   public:
   	TopologySolver(const uint32_t iterations, const GAParams& params, 
   		 			 const PhysicalTopologyInstance& physical_instance) : 
-  			max_iterations_(iterations), instance_(physical_instance) {};
+  			max_iterations_(iterations), params_(params), instance_(physical_instance) {};
 
   	virtual ~TopologySolver() {};  
 

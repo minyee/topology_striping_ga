@@ -12,10 +12,16 @@ void TopologySolver::solve() {
 	MTRand rng(rng_seed);
 	const uint32_t num_alleles_per_chromosome = 
 		instance_.get_num_coverings() * instance_.get_num_nodes();
+	std::cout << "hello nig" << std::endl;
+	
+	std::cout << "Printing params..." << std::endl;
+	std::cout << "num individuals: " << params_.p << std::endl;
 	BRKGA<UniformStripingDecoder, MTRand> ga(num_alleles_per_chromosome, params_.p, 
 			params_.pe, params_.pm, params_.rhoe, usd, rng, params_.K, params_.num_threads);
-	// TODO(jason) : check if this is right or wrong
-	double best_fitness = 1000000; 
+
+
+
+	double best_fitness = -1; 
 	uint32_t best_generation = 0;
 	
 	std::vector<double> best_chromosomes;
@@ -47,9 +53,9 @@ void TopologySolver::solve() {
 	}
 
 	// now try to reconstruct the best chromosomes as the striping solution
-	std::vector<Covering> striping_pattern = usd.transform_chromosome_to_coverings(best_chromosomes);
-	std::cout << "Best striping value has fitness value of: " 
-			  << std::to_string(usd.get_striping_goodness(best_chromosomes)) << std::endl;
+	//std::vector<Covering> striping_pattern = usd.transform_chromosome_to_coverings(best_chromosomes);
+	//std::cout << "Best striping value has fitness value of: " 
+	//		  << std::to_string(usd.get_striping_goodness(best_chromosomes)) << std::endl;
 }
 
 }  //  namespace topology_solver

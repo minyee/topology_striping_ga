@@ -28,18 +28,19 @@ int main(int argc, char* argv[]) {
 	physical_instance.set_covering_links(0, 4);
 	physical_instance.set_covering_links(1, 4);
 	physical_instance.set_covering_links(2, 4);
-
+	physical_instance.print_params();
 	topology_solver::GAParams params;
 	const uint32_t num_iterations = 30;
 	params.pe = 0.7; // probability of elite items into next population
 	params.pm = 0.2; 
 	params.rhoe = 0.1;
-	params.num_threads = 3;
+	params.num_threads = 1;
 	params.K = 3;
 	params.reset_gen = 30;
+	params.p = 100;
 
-	
 	topology_solver::TopologySolver solver(num_iterations, params, physical_instance);
+	solver.solve();
 	std::cout << "Exited topology designer" << std::endl;
 
 	// maybe each chromosome itself is a physical connectivity, and 

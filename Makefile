@@ -7,7 +7,7 @@ CPP= g++
 #	full error and warning reports
 #	no range checking within BRKGA:
 #CFLAGS= -O3 -fopenmp -Wextra -Wall -Weffc++ -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
-CFLAGS= -Wall -O3 -Wextra -Wall -Wc++11-extensions -ansi -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith
+CFLAGS= -std=c++11 -Wall -O3 -Wextra -Wall -ansi -Woverloaded-virtual -Wcast-align -Wpointer-arith
 
 # Compiler flags for debugging; uncomment if needed:
 #	range checking enabled in the BRKGA API
