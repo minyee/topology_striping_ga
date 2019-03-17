@@ -9,18 +9,24 @@ UniformStripingDecoder::decode(const std::vector<double> & chromosome) const {
 	const double large_number = 10E10;	
 	std::vector<int> es_coverings(num_electrical_switches_, 0);
 	std::vector<int> os_coverings(num_optical_switches_, 0);
-	std::vector<Covering> covering = 
+	std::vector<Covering> coverings = 
 		transform_chromosome_to_coverings_greedy(chromosome);
 	for (int i = 0; i < num_electrical_switches_; i++) {
 		if (es_coverings[i] > electrical_switches_link_budget_[i]) {
 			return -large_number;
 		}
 	}	
+	for (const auto& covering : coverings) {
+		for (const auto& entry : covering.striping) {
+			es_coverings[entry]++;
+		}
+	}
 	int min = 10E5;
 	for (const auto& es : es_coverings) {
 		min = std::min(es, min);
 	}	
-	return min;
+	std::cout << "min is: " << min << std::endl;
+	return 1/min;
 }
 
 double 
@@ -86,6 +92,7 @@ UniformStripingDecoder::transform_chromosome_to_coverings_greedy(const std::vect
 	
 	//Initialize leftover links for optical and electrical switches first
 	for (int i = 0; i < num_optical_switches_; i++) {
+		soln[i].id = i;
 		optical_switch_leftover[i] = optical_switches_link_budget_[i];
 	}
 
@@ -110,6 +117,9 @@ UniformStripingDecoder::transform_chromosome_to_coverings_greedy(const std::vect
 			}
 		}
 	}	
+	for (int i = 0; i < num_optical_switches_; i++) {
+		std::cout << "Optical switch : " << i << " has " << optical_switch_leftover[i] << " links leftover" << std::endl; 
+	}
 	return soln;
 }
 

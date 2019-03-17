@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	physical_instance.set_covering_links(2, 4);
 	physical_instance.print_params();
 	topology_solver::GAParams params;
-	const uint32_t num_iterations = 30;
+	const uint32_t num_iterations = 200;
 	params.pe = 0.7; // probability of elite items into next population
 	params.pm = 0.2; 
 	params.rhoe = 0.1;

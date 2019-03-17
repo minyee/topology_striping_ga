@@ -32,10 +32,15 @@ class TopologySolver {
 
   	void solve();
 
+  	void clear_solution() {solution_.clear();};
+
+  	const std::vector<Covering>& get_solution() const {return solution_;};
+
   private:
   	uint32_t max_iterations_;
   	GAParams params_;
   	PhysicalTopologyInstance instance_;
+  	std::vector<Covering> solution_;
 };
 
 }  // namespace topology_solver

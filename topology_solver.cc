@@ -12,7 +12,6 @@ void TopologySolver::solve() {
 	MTRand rng(rng_seed);
 	const uint32_t num_alleles_per_chromosome = 
 		instance_.get_num_coverings() * instance_.get_num_nodes();
-	std::cout << "hello nig" << std::endl;
 	
 	std::cout << "Printing params..." << std::endl;
 	std::cout << "num individuals: " << params_.p << std::endl;
@@ -21,7 +20,7 @@ void TopologySolver::solve() {
 
 
 
-	double best_fitness = -1; 
+	double best_fitness = 1000000; 
 	uint32_t best_generation = 0;
 	
 	std::vector<double> best_chromosomes;
@@ -33,6 +32,7 @@ void TopologySolver::solve() {
 			best_generation = i;
 			best_fitness = ga.getBestFitness();
 			best_chromosomes = ga.getBestChromosome();
+			std::cout << "Size of best_chromosomes is : " << best_chromosomes.size() << std::endl;
 		}
 
 		// reset the genetics algorithm after several tries of not improving solution significantly
@@ -51,7 +51,16 @@ void TopologySolver::solve() {
 
 		// evolution strategy exchange top individuals among the populations
 	}
-
+	std::cout << "Size of best_chromosomes is : " << best_chromosomes.size() << std::endl;
+	std::vector<Covering> coverings = 
+		usd.transform_chromosome_to_coverings_greedy(best_chromosomes);
+	for (const auto& covering : coverings) {
+		std::cout << "ocs_id: " <<  covering.id << std::endl << "Covers: ";
+		for (const auto& entry : covering.striping) {
+			std::cout << entry << " ";
+		}
+		std::cout << std::endl;
+	}
 	// now try to reconstruct the best chromosomes as the striping solution
 	//std::vector<Covering> striping_pattern = usd.transform_chromosome_to_coverings(best_chromosomes);
 	//std::cout << "Best striping value has fitness value of: " 

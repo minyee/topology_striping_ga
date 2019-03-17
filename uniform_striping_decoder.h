@@ -24,7 +24,7 @@ class UniformStripingDecoder {
   	};
 
   	virtual std::vector<Covering> transform_chromosome_to_coverings(const std::vector<double>& chromosome) const; 
-  
+  	std::vector<Covering> transform_chromosome_to_coverings_greedy(const std::vector<double>& chromosome) const;
   protected:
   	int num_optical_switches_;
 
@@ -37,7 +37,7 @@ class UniformStripingDecoder {
   	virtual void initialize(const PhysicalTopologyInstance& physical_topology_instance);
   
   private:
-  	std::vector<Covering> transform_chromosome_to_coverings_greedy(const std::vector<double>& chromosome) const;
+  	
 };
 
 }  //  namespace topology_solver
