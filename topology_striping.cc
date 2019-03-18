@@ -8,7 +8,6 @@ int main(int argc, char* argv[]) {
 		std::cerr << "usage: ./topol_striping argfile" << std::endl;
 		return 1;
 	}
-	std::cout << "Hello world" << std::endl;
 	topology_solver::PhysicalTopologyInstance physical_instance;
 	
 	// add nodes, n = 4

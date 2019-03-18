@@ -52,8 +52,9 @@ void TopologySolver::solve() {
 		// evolution strategy exchange top individuals among the populations
 	}
 	std::cout << "Size of best_chromosomes is : " << best_chromosomes.size() << std::endl;
-	std::vector<Covering> coverings = 
-		usd.transform_chromosome_to_coverings_greedy(best_chromosomes);
+	std::cout << "Best fitness is : " << best_fitness << std::endl;
+	std::vector<Covering> coverings = 		
+		usd.transform_chromosome_to_coverings(best_chromosomes);
 	for (const auto& covering : coverings) {
 		std::cout << "ocs_id: " <<  covering.id << std::endl << "Covers: ";
 		for (const auto& entry : covering.striping) {
@@ -61,10 +62,6 @@ void TopologySolver::solve() {
 		}
 		std::cout << std::endl;
 	}
-	// now try to reconstruct the best chromosomes as the striping solution
-	//std::vector<Covering> striping_pattern = usd.transform_chromosome_to_coverings(best_chromosomes);
-	//std::cout << "Best striping value has fitness value of: " 
-	//		  << std::to_string(usd.get_striping_goodness(best_chromosomes)) << std::endl;
 }
 
 }  //  namespace topology_solver

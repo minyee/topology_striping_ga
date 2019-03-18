@@ -1,5 +1,6 @@
 #include "uniform_striping_decoder.h"
-
+#include <algorithm>
+#include <cassert>
 
 namespace topology_solver {
 using std::pair;
@@ -7,26 +8,30 @@ double
 UniformStripingDecoder::decode(const std::vector<double> & chromosome) const {
 	// Penalize constraint violation
 	const double large_number = 10E10;	
-	std::vector<int> es_coverings(num_electrical_switches_, 0);
-	std::vector<int> os_coverings(num_optical_switches_, 0);
 	std::vector<Covering> coverings = 
-		transform_chromosome_to_coverings_greedy(chromosome);
+		transform_chromosome_to_coverings(chromosome);
+	// Initialize the connectivity matrix
+	std::vector< std::vector<int> > topology_connectivity(num_electrical_switches_);
 	for (int i = 0; i < num_electrical_switches_; i++) {
-		if (es_coverings[i] > electrical_switches_link_budget_[i]) {
-			return -large_number;
-		}
-	}	
+		topology_connectivity[i].resize(num_electrical_switches_);
+		std::fill(topology_connectivity[i].begin(), topology_connectivity[i].end(), 0);
+	}
+	// populate the connectivity matrix
 	for (const auto& covering : coverings) {
-		for (const auto& entry : covering.striping) {
-			es_coverings[entry]++;
+		for (const auto& src : covering.striping) {
+			for (const auto& dst : covering.striping) {
+				topology_connectivity[src][dst]++;
+			}
 		}
 	}
 	int min = 10E5;
-	for (const auto& es : es_coverings) {
-		min = std::min(es, min);
-	}	
-	std::cout << "min is: " << min << std::endl;
-	return 1/min;
+	for (int i = 0; i < num_electrical_switches_; i++) {
+		for (int j = 0; j < num_electrical_switches_; j++) {
+			min = std::min(topology_connectivity[i][j], min);
+		}
+	}
+	
+	return min ? 1/static_cast<double>(min) : large_number;
 }
 
 double 
@@ -60,7 +65,7 @@ void minitrial() {
 
 	
 	// connect src with intermediate
-	mincost::Edge* tmp_edge1 = mincost::genEdge(intermediate, 1, 0, 0);
+	mincost::Edge* tmp_edge1 = mincost::genEdge(intermediate, 1, 1, 0);
 	mincost::Edge* tmp_edge2 = mincost::genEdge(src, 1, 0, 0);
 	tmp_edge1->counterEdge = tmp_edge2;
 	tmp_edge2->counterEdge = tmp_edge1;
@@ -69,59 +74,18 @@ void minitrial() {
 	residual.adj[intermediate].push_back(tmp_edge2);
 
 	// connect intermediate with dst
-	mincost::Edge* tmp_edge3 = mincost::genEdge(dst, 1, 0, 0);
+	mincost::Edge* tmp_edge3 = mincost::genEdge(dst, 1, 1, 0);
 	mincost::Edge* tmp_edge4 = mincost::genEdge(intermediate, 1, 0, 0);
 	tmp_edge3->counterEdge = tmp_edge4;
 	tmp_edge4->counterEdge = tmp_edge3;
 	g.adj[intermediate].push_back(tmp_edge3);
 	residual.adj[intermediate].push_back(tmp_edge3);
 	residual.adj[dst].push_back(tmp_edge4);
-
+	std::cout << "minitrials" << std::endl;
 	const double cost = mincost::calcMinCostFlow(g, residual, src, dst, 1);
 	std::cout << "cost from minitrial is: " << cost << std::endl;
 }
 
-bool sortbypairdescending(const std::pair<int, double>& a, const std::pair<int, double>& b) {
-	return a.second > b.second;
-}
-
-std::vector<Covering>
-UniformStripingDecoder::transform_chromosome_to_coverings_greedy(const std::vector<double>& chromosomes) const {
-	std::vector<Covering> soln(num_optical_switches_);
-	std::vector<int> optical_switch_leftover(num_optical_switches_);
-	
-	//Initialize leftover links for optical and electrical switches first
-	for (int i = 0; i < num_optical_switches_; i++) {
-		soln[i].id = i;
-		optical_switch_leftover[i] = optical_switches_link_budget_[i];
-	}
-
-
-	for (int elec = 0; elec < num_electrical_switches_; elec++) {
-		int leftover_elec_links = electrical_switches_link_budget_[elec];
-		std::vector< std::pair<int, double> > scores(num_optical_switches_);
-		int offset = 0;
-		for (int optical = 0; optical < num_optical_switches_; optical++) {
-			scores[optical] = std::make_pair(optical, chromosomes[offset + elec]);
-			offset += optical_switches_link_budget_[optical];
-		}
-		std::sort(scores.begin(), scores.end(), sortbypairdescending);
-		for (int i = 0; i < scores.size(); i++) {
-			if (leftover_elec_links <= 0) {
-				break;
-			}
-			if (optical_switch_leftover[std::get<0>(scores[i])] > 0) {
-				soln[std::get<0>(scores[i])].striping.insert(elec);
-				optical_switch_leftover[i]--;				
-				leftover_elec_links--;
-			}
-		}
-	}	
-	for (int i = 0; i < num_optical_switches_; i++) {
-		std::cout << "Optical switch : " << i << " has " << optical_switch_leftover[i] << " links leftover" << std::endl; 
-	}
-	return soln;
-}
 
 std::vector<Covering> 
 UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<double>& chromosomes) const {
@@ -137,8 +101,9 @@ UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<doub
 	residual.adj = new std::vector<mincost::Edge*>[residual.numVertices];
 	// Generate the left half of the nodes in the bipartite graph, which are the electrical switches
 	for (node_id = 1; node_id <= num_electrical_switches_; node_id++) {		
-		mincost::Edge* tmp_edge1 = mincost::genEdge(node_id, electrical_switches_link_budget_[node_id - 1], electrical_switches_link_budget_[node_id - 1], 0);
-		mincost::Edge* tmp_edge2 = mincost::genEdge(src, electrical_switches_link_budget_[node_id - 1], electrical_switches_link_budget_[node_id - 1], 0);
+		mincost::Edge* tmp_edge1 = mincost::genEdge(node_id, electrical_switches_link_budget_[node_id - 1], 
+			electrical_switches_link_budget_[node_id - 1], 0);
+		mincost::Edge* tmp_edge2 = mincost::genEdge(src, electrical_switches_link_budget_[node_id - 1], 0, 0);
 		tmp_edge1->counterEdge = tmp_edge2;
 		tmp_edge2->counterEdge = tmp_edge1;
 		g.adj[src].push_back(tmp_edge1);
@@ -152,19 +117,19 @@ UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<doub
 		for (int elec_id = 1; elec_id <= num_electrical_switches_; elec_id++) {
 			// TODO (mteh) : figure out the how to retrieve allele value here
 			const double score = chromosomes[ocs_id * num_electrical_switches_ + (elec_id - 1)];
-			mincost::Edge* tmp_edge1 = mincost::genEdge(elec_id, 1, 1, score);
+			mincost::Edge* tmp_edge1 = mincost::genEdge(node_id, 1, 1, score);
 			// TODO (mteh) : figure out the how to retrieve allele value here
-			mincost::Edge* tmp_edge2 = mincost::genEdge(node_id, 1, 1, -score);  
+			mincost::Edge* tmp_edge2 = mincost::genEdge(elec_id, 1, 0, -score);  
 			tmp_edge1->counterEdge = tmp_edge2;
 			tmp_edge2->counterEdge = tmp_edge1;
-			g.adj[src].push_back(tmp_edge1);
-			residual.adj[node_id].push_back(tmp_edge1);
-			residual.adj[elec_id].push_back(tmp_edge2);	
+			g.adj[elec_id].push_back(tmp_edge1);
+			residual.adj[elec_id].push_back(tmp_edge1);
+			residual.adj[node_id].push_back(tmp_edge2);	
 		}
-		mincost::Edge* tmp_edge3 = mincost::genEdge(node_id, optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 
+		mincost::Edge* tmp_edge3 = mincost::genEdge(dst, optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 
 										optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 0); // the forward cost is the value of chromosome
-		mincost::Edge* tmp_edge4 = mincost::genEdge(dst, optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 
-										optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 0);
+		mincost::Edge* tmp_edge4 = mincost::genEdge(node_id, optical_switches_link_budget_[node_id - num_electrical_switches_ - 1], 
+										0, 0);
 		tmp_edge3->counterEdge = tmp_edge4;
 		tmp_edge4->counterEdge = tmp_edge3;
 		g.adj[node_id].push_back(tmp_edge3);
@@ -197,8 +162,9 @@ UniformStripingDecoder::transform_chromosome_to_coverings(const std::vector<doub
 			}
 		}
 	}
-	delete g.adj;
-	delete residual.adj;
+	//minitrial();
+	//delete g.adj;
+	//delete residual.adj;
 	return covering_soln;
 }
 
