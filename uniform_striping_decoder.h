@@ -17,8 +17,6 @@ class UniformStripingDecoder {
 
   	double decode(const std::vector<double>& chromosome) const;
 
-  	virtual double get_striping_goodness(const std::vector<double>& chromosome) const;
-
   	virtual std::string to_string() const {
   		return "Uniform striping where we prioritize that the minimum striped switch pairs are maximized";
   	};
@@ -35,11 +33,7 @@ class UniformStripingDecoder {
   	std::vector<uint32_t> optical_switches_link_budget_;
 
   	virtual void initialize(const PhysicalTopologyInstance& physical_topology_instance);
-  
-  private:
-  	
 };
 
 }  //  namespace topology_solver
-
 #endif

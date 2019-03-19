@@ -34,12 +34,6 @@ UniformStripingDecoder::decode(const std::vector<double> & chromosome) const {
 	return min ? 1/static_cast<double>(min) : large_number;
 }
 
-double 
-UniformStripingDecoder::get_striping_goodness(const std::vector<double>& chromosome) const {
-	double striping_goodness = 0;
-	return striping_goodness;
-}
-
 void 
 UniformStripingDecoder::initialize(const PhysicalTopologyInstance& physical_topology_instance) {
 	num_optical_switches_ = physical_topology_instance.get_num_coverings();
